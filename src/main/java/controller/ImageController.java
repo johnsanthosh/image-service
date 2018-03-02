@@ -1,5 +1,6 @@
 package controller;
 
+import dao.JobDao;
 import model.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import service.JobService;
+import service.SqsService;
 import service.UploadService;
 
 import java.net.URI;
@@ -22,11 +24,15 @@ public class ImageController {
 
     private JobService jobService;
     private UploadService uploadService;
+    private SqsService sqsService;
+    private JobDao jobDao;
 
     @Autowired
-    public ImageController(JobService jobService, UploadService uploadService) {
+    public ImageController(JobService jobService, UploadService uploadService, SqsService sqsService, JobDao jobDao) {
         this.jobService = jobService;
         this.uploadService = uploadService;
+        this.sqsService = sqsService;
+        this.jobDao = jobDao;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
@@ -42,13 +48,14 @@ public class ImageController {
             @RequestPart(required = false, name = "url") String url,
             @RequestParam(required = false, name = "image") MultipartFile file) throws Exception {
 
-        LOGGER.info("Create job requested");
+        Job job = jobService.createJob(url, file);
+        LOGGER.info("Create job requested with jobId={}", job.getId());
 
-        //delegate to uploadService for processing and validation
-        Job response = jobService.createJob(url, file);
-        uploadService.uploadFile(response.getFileName(), file);
+        uploadService.uploadFile(job.getFilePath(), file);
+        sqsService.insertToQueue(job.getId());
+        jobDao.createJob(job);
 
-        LOGGER.info("Create job successful");
+        LOGGER.info("Create job successful with jobId={}", job.getId());
     }
 
 

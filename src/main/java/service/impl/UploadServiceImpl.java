@@ -4,10 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import controller.ImageController;
 import model.Job;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import service.UploadService;
 
@@ -17,13 +19,14 @@ import java.io.IOException;
 @Service
 public class UploadServiceImpl implements UploadService {
 
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(UploadServiceImpl.class);
+
     AmazonS3 s3Client;
 
     @Value("${amazon.s3.bucket.name}")
     private String bucketName;
 
-    @Value("${amazon.s3.bucket.image.folder.name}")
-    private String imageFolder;
 
     @Value("${amazon.s3.bucket.job.folder.name}")
     private String jobFolder;
@@ -38,14 +41,6 @@ public class UploadServiceImpl implements UploadService {
 
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
-    }
-
-    public String getImageFolder() {
-        return imageFolder;
-    }
-
-    public void setImageFolder(String imageFolder) {
-        this.imageFolder = imageFolder;
     }
 
     public String getJobFolder() {
@@ -66,11 +61,11 @@ public class UploadServiceImpl implements UploadService {
 
 
     @Override
-    public void uploadFile(String fileName, MultipartFile multipartFile) {
+    public void uploadFile(String filePath, MultipartFile multipartFile) {
         try {
-            s3Client.putObject(new PutObjectRequest(bucketName, getImageFolder() + '/' + fileName, multipartFile.getInputStream(), new ObjectMetadata()));
+            s3Client.putObject(new PutObjectRequest(bucketName, filePath, multipartFile.getInputStream(), new ObjectMetadata()));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 

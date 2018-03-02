@@ -2,15 +2,16 @@ package model;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@Document(collection = "jobs")
 public class Job implements Serializable {
     protected String id;
     protected String url;
     protected String result;
-    protected String fileName;
     protected String inputFilename;
     protected String filePath;
     protected JobStatus status;
@@ -37,14 +38,6 @@ public class Job implements Serializable {
 
     public void setResult(String result) {
         this.result = result;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     public DateTime getSubmitDateTime() {
