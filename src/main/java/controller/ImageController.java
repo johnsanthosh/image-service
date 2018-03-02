@@ -1,6 +1,7 @@
 package controller;
 
 import dao.JobDao;
+import listener.SqsListener;
 import model.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,9 @@ public class ImageController {
         this.uploadService = uploadService;
         this.sqsService = sqsService;
         this.jobDao = jobDao;
+
+        Thread sqsListener = new Thread(new SqsListener(this.sqsService));
+        sqsListener.start();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
@@ -51,9 +55,10 @@ public class ImageController {
         Job job = jobService.createJob(url, file);
         LOGGER.info("Create job requested with jobId={}", job.getId());
 
+        jobDao.createJob(job);
         uploadService.uploadFile(job.getFilePath(), file);
         sqsService.insertToQueue(job.getId());
-        jobDao.createJob(job);
+
 
         LOGGER.info("Create job successful with jobId={}", job.getId());
     }
