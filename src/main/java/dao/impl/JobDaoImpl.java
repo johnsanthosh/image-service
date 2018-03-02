@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import repository.JobRepository;
 
+import java.util.List;
+
 @Repository
 public class JobDaoImpl implements JobDao {
 
@@ -25,5 +27,10 @@ public class JobDaoImpl implements JobDao {
     @Override
     public void deleteJob(String jobId) {
 
+    }
+
+    @Override
+    public List<Job> getJobs() {
+        return this.jobRepository.findAll();
     }
 }

@@ -16,6 +16,7 @@ import service.SqsService;
 import service.UploadService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController()
 @RequestMapping(value = "/image-service")
@@ -61,6 +62,11 @@ public class ImageController {
 
 
         LOGGER.info("Create job successful with jobId={}", job.getId());
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/images")
+    List<Job> getJobs() {
+        return jobDao.getJobs();
     }
 
 
