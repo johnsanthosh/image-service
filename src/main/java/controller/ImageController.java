@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+import pool.Ec2InstancePoolManager;
 import service.JobService;
 import service.SqsService;
 import service.UploadService;
@@ -28,15 +29,18 @@ public class ImageController {
     private UploadService uploadService;
     private SqsService sqsService;
     private JobDao jobDao;
+    private Ec2InstancePoolManager poolManager;
 
     @Autowired
-    public ImageController(JobService jobService, UploadService uploadService, SqsService sqsService, JobDao jobDao) {
+    public ImageController(JobService jobService, UploadService uploadService, SqsService sqsService,
+                           JobDao jobDao, Ec2InstancePoolManager poolManager) {
         this.jobService = jobService;
         this.uploadService = uploadService;
         this.sqsService = sqsService;
         this.jobDao = jobDao;
+        this.poolManager = poolManager;
 
-        Thread sqsListener = new Thread(new SqsListener(this.sqsService));
+        Thread sqsListener = new Thread(new SqsListener(this.sqsService, this.poolManager));
         sqsListener.start();
     }
 
