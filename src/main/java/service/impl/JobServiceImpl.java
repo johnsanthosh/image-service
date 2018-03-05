@@ -16,8 +16,20 @@ public class JobServiceImpl implements JobService {
     @Value("${amazon.s3.bucket.image.folder.name}")
     private String imageFolder;
 
+    @Value("${amazon.s3.bucket.name}")
+    private String bucketName;
+
     @Value("${amazon.s3.base.url}")
     private String s3BaseUrl;
+
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
     public String getS3BaseUrl() {
         return s3BaseUrl;
@@ -44,8 +56,10 @@ public class JobServiceImpl implements JobService {
 
         if (file != null) {
             job.setInputFilename(file.getOriginalFilename());
-            job.setFilePath(getImageFolder() + ServiceConstants.PATH_SEPARATOR + job.getSubmitDateTime() + file.getOriginalFilename());
-            job.setUrl(getS3BaseUrl() + ServiceConstants.PATH_SEPARATOR + job.getFilePath());
+            job.setFilePath(getImageFolder() + ServiceConstants.PATH_SEPARATOR + job.getSubmitDateTime()
+                    + file.getOriginalFilename());
+            job.setUrl(getS3BaseUrl() + ServiceConstants.PATH_SEPARATOR + getBucketName()
+                    + ServiceConstants.PATH_SEPARATOR + job.getFilePath());
         }
         return job;
     }

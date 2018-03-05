@@ -36,7 +36,7 @@ public class BashExecuterServiceImpl implements BashExecuterService {
         if (StringUtils.isEmpty(error)) {
             LOGGER.info("Result computed, result={}", result);
         } else {
-            LOGGER.info("Result computed, error={}", error);
+            LOGGER.info("Result computation failed with error={}", error);
         }
 
         return result;
