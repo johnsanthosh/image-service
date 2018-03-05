@@ -55,8 +55,8 @@ public class Ec2Instantiator implements Runnable {
                     }
 
                     try {
-                        LOGGER.info("Ec2Instantiator thread sleeping for time={}ms.", ServiceConstants.LISTENER_SLEEP_TIME);
-                        Thread.sleep(ServiceConstants.LISTENER_SLEEP_TIME);
+                        LOGGER.info("Ec2Instantiator thread sleeping for time={}ms.", ServiceConstants.SLEEP_TIME_20S);
+                        Thread.sleep(ServiceConstants.SLEEP_TIME_20S);
                     } catch (InterruptedException e) {
                         LOGGER.error(e.getMessage());
                     }

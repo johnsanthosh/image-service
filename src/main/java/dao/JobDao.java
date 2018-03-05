@@ -9,4 +9,5 @@ public interface JobDao {
     void updateJob(Job job);
     void deleteJob(String jobId);
     List<Job> getJobs();
+    Job getJob(String id);
 }

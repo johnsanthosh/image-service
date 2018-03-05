@@ -21,7 +21,7 @@ public class JobDaoImpl implements JobDao {
 
     @Override
     public void updateJob(Job job) {
-
+        jobRepository.save(job);
     }
 
     @Override
@@ -32,5 +32,10 @@ public class JobDaoImpl implements JobDao {
     @Override
     public List<Job> getJobs() {
         return this.jobRepository.findAll();
+    }
+
+    @Override
+    public Job getJob(String id) {
+        return this.jobRepository.findOne(id);
     }
 }

@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class BashExecuterServiceImpl implements BashExecuterService {
     @Override
     public String recognizeImage(String imageUrl) {
-        ProcessBuilder pb = new ProcessBuilder("./recognize_image.sh",
+        ProcessBuilder pb = new ProcessBuilder("/home/ubuntu/recognize_image.sh",
                 imageUrl);
         String result = null;
         try {
