@@ -49,7 +49,7 @@ public class Ec2Instantiator implements Runnable {
                     LOGGER.info("Retrieving queue attributes from SQS. ApproximateNumberOfMessages={}", messageCount);
                     long instancesCreated = poolManager.getPool().getCreatedCount();
                     long extraInstancesNeeded = messageCount - instancesCreated;
-                    if (messageCount > 0 && extraInstancesNeeded > 0
+                    if (messageCount > 1 && extraInstancesNeeded > 0
                             && (extraInstancesNeeded + instancesCreated) <= ServiceConstants.MAX_EC2_INSTANCE_COUNT) {
                         createInstances((int) extraInstancesNeeded);
                     }

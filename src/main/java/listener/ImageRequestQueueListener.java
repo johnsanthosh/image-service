@@ -68,6 +68,7 @@ public class ImageRequestQueueListener implements Runnable {
 
                     // Execute bash script to recognize image.
                     String result = bashExecuterService.recognizeImage(job.getUrl());
+                    LOGGER.info("Result computed for jobId={}, result={}", job.getId(), result);
                     job.setResult(result);
 
                     // Updates job record in MongoDB.
