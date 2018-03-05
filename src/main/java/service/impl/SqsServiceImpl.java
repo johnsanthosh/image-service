@@ -2,10 +2,7 @@ package service.impl;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.DeleteMessageRequest;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.*;
 import model.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import service.SqsService;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SqsServiceImpl implements SqsService {
@@ -54,5 +55,15 @@ public class SqsServiceImpl implements SqsService {
         String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
         amazonSQS.deleteMessage(new DeleteMessageRequest(queueUrl, messageReceiptHandle));
         LOGGER.info("Deleting message with handle={} from SQS.", messageReceiptHandle);
+    }
+
+    @Override
+    public Map<String, String> getQueueAttributes() {
+        String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
+        List<String> attributes = Stream.of(QueueAttributeName.ApproximateNumberOfMessages.toString())
+                .collect(Collectors.toList());
+        GetQueueAttributesRequest getQueueAttributesRequest = new GetQueueAttributesRequest(queueUrl, attributes);
+        GetQueueAttributesResult result = amazonSQS.getQueueAttributes(getQueueAttributesRequest);
+        return result.getAttributes();
     }
 }

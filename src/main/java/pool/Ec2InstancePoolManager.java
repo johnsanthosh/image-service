@@ -1,5 +1,6 @@
 package pool;
 
+import constants.ServiceConstants;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ public class Ec2InstancePoolManager {
     public void initializeInstancePool() {
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setMaxIdle(1);
-        config.setMaxTotal(4);
+        config.setMaxTotal(ServiceConstants.MAX_EC2_INSTANCE_COUNT);
         config.setTestOnBorrow(true);
         config.setTestOnReturn(true);
         pool = new Ec2InstancePool(new Ec2InstanceFactory(), config);

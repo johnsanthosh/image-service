@@ -6,6 +6,7 @@ import model.Ec2Instance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import pool.Ec2InstancePoolManager;
 import service.Ec2Service;
@@ -14,19 +15,20 @@ import service.impl.Ec2ServiceImpl;
 
 import java.util.List;
 
-public class SqsListener implements Runnable {
+@Component
+public class ImageRequestQueueListener implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SqsListener.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ImageRequestQueueListener.class);
 
     private Ec2InstancePoolManager poolManager;
 
     private SqsService sqsService;
 
-
-    public SqsListener() {
+    public ImageRequestQueueListener() {
     }
 
-    public SqsListener(SqsService sqsService, Ec2InstancePoolManager poolManager) {
+    @Autowired
+    public ImageRequestQueueListener(SqsService sqsService, Ec2InstancePoolManager poolManager) {
         this.sqsService = sqsService;
         this.poolManager = poolManager;
     }
@@ -34,7 +36,7 @@ public class SqsListener implements Runnable {
     @Override
     public void run() {
         while (true) {
-            LOGGER.info("Polling SQS.");
+            LOGGER.info("Polling SQS for messages.");
             List<Message> messages = null;
 
             if (sqsService != null) {
@@ -42,7 +44,7 @@ public class SqsListener implements Runnable {
 
                 if (CollectionUtils.isEmpty(messages)) {
                     try {
-                        LOGGER.info("Listener thread sleeping for time={}ms.", ServiceConstants.LISTENER_SLEEP_TIME);
+                        LOGGER.info("ImageRequestQueueListener thread sleeping for time={}ms.", ServiceConstants.LISTENER_SLEEP_TIME);
                         Thread.sleep(ServiceConstants.LISTENER_SLEEP_TIME);
                     } catch (InterruptedException e) {
                         LOGGER.error(e.getMessage());
@@ -50,23 +52,18 @@ public class SqsListener implements Runnable {
                 } else {
                     String messageReceiptHandle = messages.get(0).getReceiptHandle();
                     messages.forEach(message -> LOGGER.info("Message body={}", message.getBody()));
-                    // TODO Add logic to check sqs size and create instances based on that.
-                    try {
-                        createInstances();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    // TODO Add logic to invoke BatchExecutorService.
                     sqsService.deleteMessage(messageReceiptHandle);
+                    try {
+                        LOGGER.info("ImageRequestQueueListener thread sleeping for time={}ms.", ServiceConstants.LISTENER_SLEEP_TIME);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        LOGGER.error(e.getMessage());
+                    }
                 }
             }
         }
 
     }
 
-    public void createInstances() throws Exception {
-        // TODO Modify
-        Ec2Instance ec2Instance1 = (Ec2Instance) poolManager.getPool().borrowObject();
-        Ec2Service ec2Service1 = new Ec2ServiceImpl(ec2Instance1);
-        LOGGER.info("EC2 Instance created, InstanceId={}", ec2Service1.createInstance());
-    }
 }

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"controller", "service", "dao", "pool", "model"})
+@ComponentScan(basePackages = {"controller", "service", "dao", "pool", "model", "listener"})
 @EnableMongoRepositories({"repository"})
 public class Application {
     public static void main(String args[]) {
