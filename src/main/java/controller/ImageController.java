@@ -17,6 +17,7 @@ import service.UploadService;
 
 import java.util.List;
 
+@CrossOrigin("http://localhost:4200")
 @RestController()
 @RequestMapping(value = "/image-service")
 public class ImageController {
