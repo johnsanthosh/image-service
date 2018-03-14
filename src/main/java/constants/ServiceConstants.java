@@ -9,7 +9,15 @@ public interface ServiceConstants {
     String AWS_SECRET_ACCESS_KEY = "Mbdz7vCuDpT+JT+vcOQZa9BZm/3dcJGrIhLP3soZ";
     int MAX_EC2_INSTANCE_COUNT = 19;
     String SPRING_BOOT_STARTUP_SLAVE = "#!/usr/bin/env bash"
+            +"\n" + "aws configure set aws_access_key_id AKIAJ23PYR3ZPWNMBJJA"
+            +"\n" + "aws configure set aws_secret_access_key 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"
             + "\n" + "sudo su ubuntu"
             + "\n" + "cd /home/ubuntu/image-service-slave"
             + "\n" + "mvn spring-boot:run";
 }
+
+
+
+
+
+

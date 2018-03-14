@@ -34,6 +34,7 @@ public class ImageRequestQueueListener implements Runnable {
     public ImageRequestQueueListener() {
     }
 
+    //TODO: understand this
     @Autowired
     public ImageRequestQueueListener(SqsService sqsService, Ec2InstancePoolManager poolManager,
                                      BashExecuterService bashExecuterService, JobDao jobDao) {
