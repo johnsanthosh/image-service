@@ -7,4 +7,7 @@ public interface UploadService {
     void uploadFile(String fileName, MultipartFile multipartFile);
 
     void createJob(Job job);
+
+    void uploadResultToS3(String fileContent);
+
 }

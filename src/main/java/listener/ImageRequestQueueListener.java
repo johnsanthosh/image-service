@@ -18,6 +18,7 @@ import pool.Ec2InstancePoolManager;
 import service.BashExecuterService;
 import service.Ec2Service;
 import service.SqsService;
+import service.UploadService;
 import service.impl.Ec2ServiceImpl;
 
 import java.util.List;
@@ -35,17 +36,20 @@ public class ImageRequestQueueListener implements Runnable {
 
     private JobDao jobDao;
 
+    private UploadService uploadService;
+
     public ImageRequestQueueListener() {
     }
 
     //TODO: understand this
     @Autowired
     public ImageRequestQueueListener(SqsService sqsService, Ec2InstancePoolManager poolManager,
-                                     BashExecuterService bashExecuterService, JobDao jobDao) {
+                                     BashExecuterService bashExecuterService, JobDao jobDao, UploadService uploadService) {
         this.sqsService = sqsService;
         this.poolManager = poolManager;
         this.bashExecuterService = bashExecuterService;
         this.jobDao = jobDao;
+        this.uploadService = uploadService;
     }
 
     @Override
@@ -87,6 +91,9 @@ public class ImageRequestQueueListener implements Runnable {
 
                     // Updates job record in MongoDB.
                     jobDao.updateJob(job);
+
+                    String resultString = "[" + job.getInputFilename() + "," + result.split("\\(score")[0] + "]";
+                    uploadService.uploadResultToS3(resultString);
 
                     // Deletes message from the queue.
                     String messageReceiptHandle = messages.get(0).getReceiptHandle();
