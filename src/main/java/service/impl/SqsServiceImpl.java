@@ -21,12 +21,6 @@ public class SqsServiceImpl implements SqsService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SqsServiceImpl.class);
 
-    @Value("${amazon.sqs.queue.name}")
-    private String queueName;
-
-    @Value("${amazon.sqs.queue.message.group.id}")
-    private String groupId;
-
     private AmazonSQS amazonSQS;
 
     SqsServiceImpl() {
@@ -34,8 +28,8 @@ public class SqsServiceImpl implements SqsService {
     }
 
     @Override
-    public void insertToQueue(String jobId) {
-        String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
+    public void insertToQueue(String jobId, String queueName, String groupId) {
+        String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
         SendMessageRequest sendMessageRequest = new SendMessageRequest(queueUrl, jobId);
         sendMessageRequest.setMessageGroupId(groupId);
         amazonSQS.sendMessage(sendMessageRequest);
@@ -43,23 +37,23 @@ public class SqsServiceImpl implements SqsService {
     }
 
     @Override
-    public List<Message> getMessages() {
-        String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
+    public List<Message> getMessages(String queueName) {
+        String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl);
         List<Message> messages = amazonSQS.receiveMessage(receiveMessageRequest).getMessages();
         return messages;
     }
 
     @Override
-    public void deleteMessage(String messageReceiptHandle) {
-        String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
+    public void deleteMessage(String messageReceiptHandle, String queueName) {
+        String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
         amazonSQS.deleteMessage(new DeleteMessageRequest(queueUrl, messageReceiptHandle));
-        LOGGER.info("Deleting message with handle={} from SQS.", messageReceiptHandle);
+        LOGGER.info("Deleting message from queueName={}.", queueName);
     }
 
     @Override
-    public Map<String, String> getQueueAttributes() {
-        String queueUrl = amazonSQS.getQueueUrl(this.queueName).getQueueUrl();
+    public Map<String, String> getQueueAttributes(String queueName) {
+        String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
         List<String> attributes = Stream.of(QueueAttributeName.ApproximateNumberOfMessages.toString())
                 .collect(Collectors.toList());
         GetQueueAttributesRequest getQueueAttributesRequest = new GetQueueAttributesRequest(queueUrl, attributes);

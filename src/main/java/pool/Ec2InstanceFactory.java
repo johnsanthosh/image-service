@@ -5,14 +5,19 @@ import model.Ec2Instance;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
+import utils.Utils;
 
+import java.util.Properties;
 
 public class Ec2InstanceFactory extends BasePooledObjectFactory {
 
+
     @Override
     public Object create() throws Exception {
-        return new Ec2Instance(ServiceConstants.AWS_ACCESS_KEY_ID, ServiceConstants.AWS_SECRET_ACCESS_KEY,
-                ServiceConstants.EC2_AMI_ID);
+        Properties properties = Utils.fetchProperties();
+        return new Ec2Instance(properties.get(ServiceConstants.AWS_ACCESS_KEY).toString(),
+                properties.get(ServiceConstants.AWS_SECRET_KEY).toString(),
+                properties.get(ServiceConstants.AWS_AMI_ID).toString());
     }
 
     @Override
