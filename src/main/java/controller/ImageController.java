@@ -7,6 +7,7 @@ import model.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,12 @@ public class ImageController {
     private Ec2InstancePoolManager poolManager;
     private ImageRequestQueueListener imageRequestQueueListener;
     private Ec2Instantiator ec2Instantiator;
+
+    @Value("${amazon.sqs.request.queue.name}")
+    private String requestQueueName;
+
+    @Value("${amazon.sqs.request.queue.message.group.id}")
+    private String requestQueueGroupId;
 
     @Autowired
     public ImageController(JobService jobService, UploadService uploadService, SqsService sqsService,
@@ -69,7 +76,7 @@ public class ImageController {
 
         jobDao.createJob(job);
         uploadService.uploadFile(job.getFilePath(), file);
-        sqsService.insertToQueue(job.getId());
+        sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
 
 
         LOGGER.info("Create job successful with jobId={}", job.getId());
