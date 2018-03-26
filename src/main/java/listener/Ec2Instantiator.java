@@ -155,6 +155,9 @@ public class Ec2Instantiator implements Runnable {
                     poolManager.getPool().invalidateObject(ec2InstanceStack.pop());
                     LOGGER.info("Ec2Instantiator : instance invalidated from the pool. Running instances={}."
                             , poolManager.getPool().getCreatedCount() - poolManager.getPool().getDestroyedCount());
+                    LOGGER.info("Ec2Instantiator : ec2 instance stackSize={}, instance pool : createdCount={}, destroyedCount={}, borrowedCount={}."
+                            , ec2InstanceStack.size(), poolManager.getPool().getCreatedCount(), poolManager.getPool().getDestroyedCount()
+                            , poolManager.getPool().getBorrowedCount());
 
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
