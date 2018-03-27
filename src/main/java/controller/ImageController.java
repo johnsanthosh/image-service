@@ -51,9 +51,6 @@ public class ImageController {
         this.imageRequestQueueListener = imageRequestQueueListener;
         this.ec2Instantiator = ec2Instantiator;
 
-        Thread imageRequestListenerThread = new Thread(imageRequestQueueListener);
-        imageRequestListenerThread.start();
-
         Thread ec2InstantiatorThread = new Thread(ec2Instantiator);
         ec2InstantiatorThread.start();
     }
