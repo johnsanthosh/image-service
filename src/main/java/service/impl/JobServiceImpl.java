@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import service.JobService;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -52,9 +53,10 @@ public class JobServiceImpl implements JobService {
         Job job = new Job();
         if (!StringUtils.isEmpty(url)) {
             job.setUrl(url);
-        }
-
-        if (file != null) {
+            job.setInputFilename(Arrays.stream(url.split("/"))
+                    .reduce((first, second) -> second)
+                    .orElse(null));
+        } else if (file != null) {
             job.setInputFilename(file.getOriginalFilename());
             job.setFilePath(getImageFolder() + ServiceConstants.PATH_SEPARATOR + job.getSubmitDateTime()
                     + file.getOriginalFilename());

@@ -17,6 +17,7 @@ public class Job implements Serializable {
     protected JobStatus status;
     protected DateTime submitDateTime;
     protected DateTime completedDateTime;
+    protected String error;
 
     public Job() {
         this.id = UUID.randomUUID().toString();
@@ -86,5 +87,13 @@ public class Job implements Serializable {
 
     public void setStatus(JobStatus status) {
         this.status = status;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }
