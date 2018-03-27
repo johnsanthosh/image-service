@@ -37,6 +37,14 @@ public class SqsServiceImpl implements SqsService {
     }
 
     @Override
+    public void insertToQueue(String jobId, String queueName) {
+        String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
+        SendMessageRequest sendMessageRequest = new SendMessageRequest(queueUrl, jobId);
+        amazonSQS.sendMessage(sendMessageRequest);
+        LOGGER.info("Inserting message={} into SQS with queueName={}.", jobId, queueName);
+    }
+
+    @Override
     public List<Message> getMessages(String queueName) {
         String queueUrl = amazonSQS.getQueueUrl(queueName).getQueueUrl();
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl);
