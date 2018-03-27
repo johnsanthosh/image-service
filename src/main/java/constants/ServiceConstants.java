@@ -11,6 +11,7 @@ public interface ServiceConstants {
             + "\n" + "/home/ubuntu/.local/bin/aws configure set aws_secret_access_key Mbdz7vCuDpT+JT+vcOQZa9BZm/3dcJGrIhLP3soZ"
             + "\n" + "sudo pip install --upgrade pip"
 	    + "\n" + "sudo pip install numpy"
+	    + "\n" + "source /home/ubuntu/tensorflow/bin/activate"
             + "\n" + "cd /home/ubuntu/image-service-slave"
             + "\n" + "java -jar target/image-service-slave-1.0-SNAPSHOT.jar";
 }
