@@ -11,7 +11,7 @@ public interface ServiceConstants {
             +"\n" + "/home/ubuntu/.local/bin/aws configure set aws_secret_access_key Mbdz7vCuDpT+JT+vcOQZa9BZm/3dcJGrIhLP3soZ"
             + "\n" + "sudo su ubuntu"
             + "\n" + "cd /home/ubuntu/image-service-slave"
-            + "\n" + "mvn spring-boot:run";
+            + "\n" + "java -jar target/image-service-slave-1.0-SNAPSHOT.jar";
 }
 
 
