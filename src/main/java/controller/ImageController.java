@@ -73,7 +73,7 @@ public class ImageController {
             uploadService.uploadFile(job.getFilePath(), file);
         }
 
-        sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
+        sqsService.insertToQueue(job.getId(), this.requestQueueName);
 
 
         LOGGER.info("Create job successful with jobId={}", job.getId());
