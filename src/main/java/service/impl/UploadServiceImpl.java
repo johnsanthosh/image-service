@@ -28,6 +28,8 @@ public class UploadServiceImpl implements UploadService {
     @Value("${amazon.s3.bucket.name}")
     private String bucketName;
 
+    @Value("${amazon.s3.result.bucket.name}")
+    private String resultBucketName;
 
     @Value("${amazon.s3.bucket.job.folder.name}")
     private String jobFolder;
@@ -143,6 +145,25 @@ public class UploadServiceImpl implements UploadService {
         }
 
         return contentsOfFile.toString();
+    }
+
+    @Override
+    public void putResultAsKeyValuePairs(String fileContent) {
+        try {
+
+            String key = fileContent;
+
+            byte[] contentBytes = key.getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream contentStream = new ByteArrayInputStream(contentBytes);
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(contentBytes.length);
+
+            s3Client.putObject(new PutObjectRequest(resultBucketName, key, contentStream, metadata));
+
+        } catch (AmazonS3Exception e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 
     @Override

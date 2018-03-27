@@ -94,30 +94,38 @@ public class ImageRequestQueueListener implements Runnable {
 
             // Fetches job record from MongoDB.
             Job job = jobDao.getJob(messageBody);
+            String result = "";
 
-            // Execute bash script to recognize image.
-            String result = bashExecuterService.recognizeImage(job.getUrl());
-
-            if (StringUtils.isEmpty(result)) {
-                LOGGER.info("ImageRequestQueueListener : Result computation for jobId={} failed.", job.getId());
-                job.setResult(result);
-                job.setStatus(JobStatus.FAILED);
+            if (job == null) {
+                LOGGER.info("ImageRequestQueueListener : Unable to retrieve job with id={} record from Mongo,", messageBody);
             } else {
-                LOGGER.info("ImageRequestQueueListener : Result computed for jobId={}, result={}", job.getId(), result);
-                job.setCompletedDateTime(DateTime.now(DateTimeZone.UTC));
-                job.setStatus(JobStatus.COMPLETE);
+                // Execute bash script to recognize image.
+                result = bashExecuterService.recognizeImage(job.getUrl());
 
-                // Deletes message from the queue on successful result computation.
-                String messageReceiptHandle = messages.get(0).getReceiptHandle();
-                sqsService.deleteMessage(messageReceiptHandle, this.requestQueueName);
+                if (StringUtils.isEmpty(result)) {
+                    LOGGER.info("ImageRequestQueueListener : Result computation for jobId={} failed.", messageBody);
+                    job.setResult(result);
+                    job.setStatus(JobStatus.FAILED);
+                } else {
+                    LOGGER.info("ImageRequestQueueListener : Result computed for jobId={}, result={}", job.getId(), result);
+                    job.setCompletedDateTime(DateTime.now(DateTimeZone.UTC));
+                    job.setStatus(JobStatus.COMPLETE);
 
-                String resultString = "[" + job.getInputFilename() + "," + result.split("\\(score")[0] + "]";
-                uploadService.uploadResultToS3(resultString);
+                    // Deletes message from the queue on successful result computation.
+                    String messageReceiptHandle = messages.get(0).getReceiptHandle();
+                    sqsService.deleteMessage(messageReceiptHandle, this.requestQueueName);
+
+                    String resultString = "[" + job.getInputFilename() + "," + result.split("\\(score")[0] + "]";
+
+                    //Appends to a file (actually replaces the file for every request). Doesn't ensure correctness of concurrent requests.
+                    uploadService.uploadResultToS3(resultString);
+                    //Writes as key value pairs to a different bucket. Key = resultString and content also is resultString here.
+                    uploadService.putResultAsKeyValuePairs(resultString);
+                }
+
+                // Updates job record in MongoDB.
+                jobDao.updateJob(job);
             }
-
-            // Updates job record in MongoDB.
-            jobDao.updateJob(job);
-
 
             try {
                 LOGGER.info("ImageRequestQueueListener : thread sleeping for time={}ms.", this.minSleepTime);
