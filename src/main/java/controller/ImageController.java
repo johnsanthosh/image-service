@@ -16,11 +16,11 @@ import service.JobService;
 import service.SqsService;
 import service.UploadService;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @CrossOrigin("http://localhost:4200")
 @RestController()
-@RequestMapping(value = "/image-service")
 public class ImageController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
@@ -60,7 +60,26 @@ public class ImageController {
         return "Image Service is running.";
     }
 
-    @RequestMapping(value = {"/images"},
+    @RequestMapping(value = {"/cloudimagerecognition"},
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void create(String input) throws Exception {
+        MultipartFile file = null;
+        Job job = jobService.createJob(input, file);
+        LOGGER.info("Create job requested with jobId={}", job.getId());
+
+        jobDao.createJob(job);
+        if (file != null) {
+            uploadService.uploadFile(job.getFilePath(), file);
+        }
+
+        sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
+
+
+        LOGGER.info("Create job successful with jobId={}", job.getId());
+    }
+
+    @RequestMapping(value = {"/cloudimagerecognition"},
             method = RequestMethod.POST,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +98,7 @@ public class ImageController {
         LOGGER.info("Create job successful with jobId={}", job.getId());
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/images")
+    @RequestMapping(method = RequestMethod.GET, value = "/cloudimagerecognition/jobs")
     List<Job> getJobs() {
         return jobDao.getJobs();
     }

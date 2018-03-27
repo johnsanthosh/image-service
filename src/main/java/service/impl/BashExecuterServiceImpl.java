@@ -1,6 +1,7 @@
 package service.impl;
 
 import listener.Ec2Instantiator;
+import model.ImageRecognitionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class BashExecuterServiceImpl implements BashExecuterService {
     private final static Logger LOGGER = LoggerFactory.getLogger(BashExecuterService.class);
 
     @Override
-    public String recognizeImage(String imageUrl) {
+    public ImageRecognitionResult recognizeImage(String imageUrl) {
         ProcessBuilder pb = new ProcessBuilder("/home/ubuntu/recognize_image.sh",
                 imageUrl);
         String result = null;
@@ -33,13 +34,18 @@ public class BashExecuterServiceImpl implements BashExecuterService {
             e.printStackTrace();
         }
 
-        if (StringUtils.isEmpty(error)) {
+        if (!StringUtils.isEmpty(result)) {
             LOGGER.info("Result computed, result={}", result);
+            if (!StringUtils.isEmpty(error)) {
+                LOGGER.warn("Result computation complete with warning={}", error);
+            }
         } else {
-            LOGGER.info("Result computation failed with error={}", error);
+            LOGGER.error("Result computation failed with error={}", error);
         }
 
-        return result;
+        ImageRecognitionResult imageRecognitionResult = new ImageRecognitionResult(result, error);
+
+        return imageRecognitionResult;
     }
 
     private String loadStream(InputStream inputStream) throws IOException {
