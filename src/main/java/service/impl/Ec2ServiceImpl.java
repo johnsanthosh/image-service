@@ -30,6 +30,7 @@ public class Ec2ServiceImpl implements Ec2Service {
         runInstancesRequest.setInstanceType("t2.micro");
         runInstancesRequest.setKeyName("cloud-computing");
         runInstancesRequest.setSecurityGroups(Arrays.asList("cloud-computing"));
+        runInstancesRequest.setInstanceInitiatedShutdownBehavior("terminate");
 
         //TODO Need to solve the AWS credentials issue on startup.
         /*
