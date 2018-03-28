@@ -1,8 +1,11 @@
 package service.impl;
 
 import constants.ServiceConstants;
+import controller.ImageController;
 import dao.JobDao;
 import model.Job;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import java.util.UUID;
 
 @Service
 public class JobServiceImpl implements JobService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     @Value("${amazon.s3.bucket.image.folder.name}")
     private String imageFolder;
@@ -75,6 +80,7 @@ public class JobServiceImpl implements JobService {
        Job updatedJob=null;
        while(jobInProgress) {
            updatedJob = jobDao.getJob(jobId);
+           LOGGER.info("updated job"+updatedJob);
            System.out.println(updatedJob);
            if(updatedJob!=null && updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
            {
