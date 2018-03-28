@@ -3,6 +3,7 @@ package service.impl;
 import constants.ServiceConstants;
 import dao.JobDao;
 import model.Job;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @Service
 public class JobServiceImpl implements JobService {
-    private JobDao jobDao;
+
     @Value("${amazon.s3.bucket.image.folder.name}")
     private String imageFolder;
 
@@ -74,13 +75,16 @@ public class JobServiceImpl implements JobService {
        Job updatedJob=null;
        while(jobInProgress) {
            updatedJob = jobDao.getJob(jobId);
-           if(updatedJob!=null &&updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
+           if(updatedJob!=null && updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
            {
                jobInProgress=false;
            }
        }
        return updatedJob.getResult();
    }
+
+   @Autowired
+    JobDao jobDao;
 
 
 
