@@ -87,8 +87,8 @@ public class JobServiceImpl implements JobService {
            {
                e.printStackTrace();
            }
-           LOGGER.info("updated job"+updatedJob.toString());
-           System.out.println(updatedJob.getStatus());
+           LOGGER.info("updated job"+updatedJob.getId()+"  "+updatedJob.getStatus());
+           //System.out.println(updatedJob.getStatus());
            if(updatedJob!=null && updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
            {
                jobInProgress=false;
