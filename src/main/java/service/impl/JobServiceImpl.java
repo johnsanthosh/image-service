@@ -81,7 +81,7 @@ public class JobServiceImpl implements JobService {
        while(jobInProgress) {
            updatedJob = jobDao.getJob(jobId);
            LOGGER.info("updated job"+updatedJob);
-           System.out.println(updatedJob);
+           System.out.println(updatedJob.getStatus());
            if(updatedJob!=null && updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
            {
                jobInProgress=false;
