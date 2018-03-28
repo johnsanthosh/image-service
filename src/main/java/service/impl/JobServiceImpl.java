@@ -74,13 +74,20 @@ public class JobServiceImpl implements JobService {
     }
 
 
-    public String getJobResult(String jobId)
-   {
+    public String getJobResult(String jobId)  {
        boolean jobInProgress=true;
        Job updatedJob=null;
        while(jobInProgress) {
            updatedJob = jobDao.getJob(jobId);
-           LOGGER.info("updated job"+updatedJob);
+
+           try {
+               Thread.sleep(1000);
+           }
+           catch (Exception e)
+           {
+               e.printStackTrace();
+           }
+           LOGGER.info("updated job"+updatedJob.toString());
            System.out.println(updatedJob.getStatus());
            if(updatedJob!=null && updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
            {
