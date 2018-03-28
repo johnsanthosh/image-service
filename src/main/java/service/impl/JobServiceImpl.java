@@ -1,6 +1,7 @@
 package service.impl;
 
 import constants.ServiceConstants;
+import dao.JobDao;
 import model.Job;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 @Service
 public class JobServiceImpl implements JobService {
-
+    private JobDao jobDao;
     @Value("${amazon.s3.bucket.image.folder.name}")
     private String imageFolder;
 
@@ -65,4 +66,22 @@ public class JobServiceImpl implements JobService {
         }
         return job;
     }
+
+
+    public String getJobResult(String jobId)
+   {
+       boolean jobInProgress=true;
+       Job updatedJob=null;
+       while(jobInProgress) {
+           updatedJob = jobDao.getJob(jobId);
+           if(updatedJob.getResult()!=null && updatedJob.getStatus().equals("completed"))
+           {
+               jobInProgress=false;
+           }
+       }
+       return updatedJob.getResult();
+   }
+
+
+
 }

@@ -16,7 +16,6 @@ import service.JobService;
 import service.SqsService;
 import service.UploadService;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @CrossOrigin("http://localhost:4200")
@@ -63,7 +62,7 @@ public class ImageController {
     @RequestMapping(value = {"/cloudimagerecognition"},
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void create(String input) throws Exception {
+    public String create(String input) throws Exception {
         MultipartFile file = null;
         Job job = jobService.createJob(input, file);
         LOGGER.info("Create job requested with jobId={}", job.getId());
@@ -74,9 +73,13 @@ public class ImageController {
         }
 
         sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
-
-
         LOGGER.info("Create job successful with jobId={}", job.getId());
+        String result="[" + job.getInputFilename() + "," + jobService.getJobResult(job.getId()).split("\\(score")[0] + "]";
+        return result;
+
+
+
+
     }
 
     @RequestMapping(value = {"/cloudimagerecognition"},
@@ -93,9 +96,12 @@ public class ImageController {
         jobDao.createJob(job);
         uploadService.uploadFile(job.getFilePath(), file);
         sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
-
-
         LOGGER.info("Create job successful with jobId={}", job.getId());
+
+
+
+
+
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/cloudimagerecognition/jobs")
