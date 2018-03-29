@@ -61,9 +61,9 @@ public class ImageController {
     }
 
     @RequestMapping(value = {"/cloudimagerecognition"},
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void create(String input) throws Exception {
+            method = RequestMethod.GET)
+    //,produces = MediaType.APPLICATION_JSON_VALUE)
+    public String create(String input) throws Exception {
         MultipartFile file = null;
         Job job = jobService.createJob(input, file);
         LOGGER.info("Create job requested with jobId={}", job.getId());
@@ -73,10 +73,36 @@ public class ImageController {
             uploadService.uploadFile(job.getFilePath(), file);
         }
 
-        sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
-
+        sqsService.insertToQueue(job.getId(), this.requestQueueName);
 
         LOGGER.info("Create job successful with jobId={}", job.getId());
+        Job updatedJob = null;
+
+        while (true) {
+            updatedJob = jobDao.getJob(job.getId());
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (updatedJob != null && updatedJob.getResult() != null) {
+                LOGGER.info("Result computation successful for job with jobId={}. result={}", job.getId(), updatedJob.getResult());
+                break;
+            }
+        }
+
+        String response = "";
+
+        try {
+            response = updatedJob.getResult().split("\\(score")[0];
+        } catch (Exception e) {
+            LOGGER.error("Failed to generate response string from the result={}", updatedJob.getResult());
+        }
+
+
+        return response;
     }
 
     @RequestMapping(value = {"/cloudimagerecognition"},
@@ -92,7 +118,7 @@ public class ImageController {
 
         jobDao.createJob(job);
         uploadService.uploadFile(job.getFilePath(), file);
-        sqsService.insertToQueue(job.getId(), this.requestQueueName, this.requestQueueGroupId);
+        sqsService.insertToQueue(job.getId(), this.requestQueueName);
 
 
         LOGGER.info("Create job successful with jobId={}", job.getId());

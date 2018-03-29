@@ -28,8 +28,9 @@ public class Ec2ServiceImpl implements Ec2Service {
     public String createInstance() {
         RunInstancesRequest runInstancesRequest = new RunInstancesRequest(ec2Instance.getEc2AmiId(), 1, 1);
         runInstancesRequest.setInstanceType("t2.micro");
-        runInstancesRequest.setKeyName("cloud-computing");
+        runInstancesRequest.setKeyName("cloud-computing-wizcrow");
         runInstancesRequest.setSecurityGroups(Arrays.asList("cloud-computing"));
+        runInstancesRequest.setInstanceInitiatedShutdownBehavior("terminate");
 
         //TODO Need to solve the AWS credentials issue on startup.
         /*

@@ -56,6 +56,9 @@ public class Ec2Instantiator implements Runnable {
     @Value("${sleep.time.min}")
     private int minSleepTime;
 
+    @Value("${sleep.time.shutdown}")
+    private int shutdownSleepTime;
+
 
     public Ec2Instantiator() {
     }
@@ -111,9 +114,16 @@ public class Ec2Instantiator implements Runnable {
                     , messageCount);
             long instancesCreated = poolManager.getPool().getCreatedCount() - poolManager.getPool().getDestroyedCount();
             LOGGER.info("EC2Instantiator : running instances={}.", instancesCreated);
-            long extraInstancesNeeded = messageCount - instancesCreated;
-            if (messageCount > 1 && extraInstancesNeeded > 0
-                    && (extraInstancesNeeded + instancesCreated) <= this.ec2MaxInstanceCount) {
+            long extraInstancesAllowed = ec2MaxInstanceCount - instancesCreated;
+
+            long extraInstancesNeeded = 0;
+            if (messageCount > instancesCreated)
+            {
+                extraInstancesNeeded = Math.min(messageCount, extraInstancesAllowed);
+            }
+            LOGGER.info("EC2Instantiator : extra instances needed={}.", extraInstancesNeeded);
+            if (extraInstancesNeeded > 0)
+            {
                 createInstances((int) extraInstancesNeeded);
                 LOGGER.info("Ec2Instantiator : Running instances={} after instance creation."
                         , poolManager.getPool().getCreatedCount() - poolManager.getPool().getDestroyedCount());
@@ -137,8 +147,8 @@ public class Ec2Instantiator implements Runnable {
         if (CollectionUtils.isEmpty(messages)) {
             try {
                 LOGGER.info("Ec2Instantiator : thread (instance-shutdown) sleeping for time={}ms.",
-                        this.maxSleepTime);
-                Thread.sleep(this.maxSleepTime);
+                        this.shutdownSleepTime);
+                Thread.sleep(this.shutdownSleepTime);
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage());
             }
