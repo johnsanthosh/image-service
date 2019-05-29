@@ -1,9 +1,9 @@
 ﻿# ImageService
 #### Group Members:
- - Sai Pragna Etikyala (1213195137)
- - Srinath Ganesan (1213222229)
- - John Santhosh (1213074510)
- - Akshay Muraleedharan Nair Santhy (1212981859)
+ - Sai Pragna Etikyala 
+ - Srinath Ganesan 
+ - John Santhosh 
+ - Akshay Muraleedharan Nair Santhy
 
 #### Requirements:
 
