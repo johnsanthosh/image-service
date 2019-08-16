@@ -1,7 +1,7 @@
 ﻿# ImageService
  The objective of this project was to develop a highly scalable RESTful service based on a distributed architecture, that leverages various Amazon Web Services (AWS) and executed a given deep learning model for image recognition. The image recognition service was deployed on Amazon EC2 and auto scaled by spawning up to 19 slave executor EC2 instances based on the number of requests it receives. The service also scaled down when the number of incoming requests decreased and managed the termination of idle slave instances. The application was tested for up to a total of 1000 requests per second. The service was designed to keep Quality of Service (QOS) at its core ensuring that not even a single request was left unprocessed and steps were taken to include meaningful error messages in the result, in case of any unexpected event that could have interrupted the availability of any of the dependent services.
  
-FYI : The AWS account used for this account was closed => Don't even bother using the AWS KEY ID and SECRET KEY :P
+FYI : The AWS account used for this project was closed => Don't even bother using the AWS KEY ID and SECRET KEY :P
  
 #### Group Members:
  - Sai Pragna Etikyala 
