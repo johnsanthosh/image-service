@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
-            <version>1.10.10.RELEASE</version>
+            <version>3.3.5</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
